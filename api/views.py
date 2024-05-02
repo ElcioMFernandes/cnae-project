@@ -90,6 +90,7 @@ class SubclasseViewSet(viewsets.ModelViewSet):
 
     queryset = Subclasse.objects.all()
     serializer_class = SubclasseSerializer
+    lookup_field = 'cd_subclasse'
 
     def create(self, request, *args, **kwargs):
         return response.Response({"error": "POST requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

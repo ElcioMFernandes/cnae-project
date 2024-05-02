@@ -173,4 +173,9 @@ cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/django
 
+# Ignore migrations
 api/migrations/*
+
+# Ignore spreadsheets
+spreadsheets/setor_economico - Copia.xlsx
+spreadsheets/setor_economico.xlsx
