@@ -16,5 +16,9 @@
 
 9º(optional) run: python.exe -m pip install --upgrade pip
 
+############################################################
+
+pwd admin - admin123
+
 $ git config --global user.name "Fulano de Tal"
 $ git config --global user.email fulanodetal@exemplo.br

@@ -24,24 +24,76 @@ from .models import Secao, Divisao, Grupo, Classe, Subclasse
 class SecaoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Secao
-        fields = '__all__'
+        exclude = ['id_secao']
 
 class DivisaoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Divisao
-        fields = '__all__'
+        exclude = ['id_divisao', 'id_secao']
 
 class GrupoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grupo
-        fields = '__all__'
+        exclude = ['id_grupo', 'id_divisao']
 
 class ClasseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Classe
-        fields = '__all__'
+        exclude = ['id_classe', 'id_grupo']
 
 class SubclasseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subclasse
-        fields = '__all__'
+        exclude = ['id_subclasse', 'id_classe']
+
+class DivisaoSecaoSerializer(serializers.ModelSerializer):
+    cd_secao = serializers.CharField(source='id_secao.cd_secao')
+
+    class Meta:
+        model = Divisao
+        fields = ['cd_secao', 'cd_divisao', 'de_divisao']
+
+    def create(self, validated_data):
+        cd_secao = validated_data.pop('id_secao')['cd_secao']
+        secao = Secao.objects.get(cd_secao=cd_secao)
+        divisao = Divisao.objects.create(id_secao=secao, **validated_data)
+        return divisao
+        
+class GrupoDivisaoSerializer(serializers.ModelSerializer):
+    cd_divisao = serializers.CharField(source='id_divisao.cd_divisao')
+
+    class Meta:
+        model = Grupo
+        fields = ['cd_divisao', 'cd_grupo', 'de_grupo']
+
+    def create(self, validated_data):
+        cd_divisao = validated_data.pop('id_divisao')['cd_divisao']
+        divisao = Divisao.objects.get(cd_divisao=cd_divisao)
+        grupo = Grupo.objects.create(id_divisao=divisao, **validated_data)
+        return grupo
+    
+class ClasseGrupoSerializer(serializers.ModelSerializer):
+    cd_grupo = serializers.CharField(source='id_grupo.cd_grupo')
+
+    class Meta:
+        model = Classe
+        fields = ['cd_grupo', 'cd_classe', 'de_classe']
+
+    def create(self, validated_data):
+        cd_grupo = validated_data.pop('id_grupo')['cd_grupo']
+        grupo = Grupo.objects.get(cd_grupo=cd_grupo)
+        classe = Classe.objects.create(id_grupo=grupo, **validated_data)
+        return classe
+    
+class SubclasseClasseSerializer(serializers.ModelSerializer):
+    cd_classe = serializers.CharField(source='id_classe.cd_classe')
+
+    class Meta:
+        model = Subclasse
+        fields = ['cd_classe', 'cd_subclasse', 'de_subclasse']
+
+    def create(self, validated_data):
+        cd_classe = validated_data.pop('id_classe')['cd_classe']
+        classe = Classe.objects.get(cd_classe=cd_classe)
+        subclasse = Subclasse.objects.create(id_classe=classe, **validated_data)
+        return subclasse
