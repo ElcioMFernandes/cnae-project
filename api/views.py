@@ -14,8 +14,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
 ################################################################################
 
-from .models import Secao, Divisao, Grupo, Classe, Subclasse
-from .serializers import SecaoSerializer, DivisaoSerializer, GrupoSerializer, ClasseSerializer, SubclasseSerializer, DivisaoSecaoSerializer, GrupoDivisaoSerializer, ClasseGrupoSerializer,SubclasseClasseSerializer
+from .models import Secao, Divisao, Grupo, Classe, Subclasse, DivisaoSetor, SetorEconomico, Data, Arrecadacao
+from .serializers import SecaoSerializer, DivisaoSerializer, GrupoSerializer, ClasseSerializer, SubclasseSerializer, DivisaoSecaoSerializer, GrupoDivisaoSerializer, ClasseGrupoSerializer, SubclasseClasseSerializer, DivisaoSetorSerializer, SetorEconomicoSerializer, DataSerializer, ArrecadacaoSerializer
 
 class SecaoViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
@@ -100,6 +100,56 @@ class SubclasseViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         return response.Response({"error": "DELETE requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+class DivisaoSetorViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.AllowAny]
+    
+    queryset = DivisaoSetor.objects.all()
+    serializer_class = DivisaoSetorSerializer
+
+    def create(self, request, *args, **kwargs):
+        return response.Response({"error": "POST requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def update(self, request, *args, **kwargs):
+        return response.Response({"error": "PUT requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def destroy(self, request, *args, **kwargs):
+        return response.Response({"error": "DELETE requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+class SetorEconomicoViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.AllowAny]
+    
+    queryset = SetorEconomico.objects.all()
+    serializer_class = SetorEconomicoSerializer
+
+    def create(self, request, *args, **kwargs):
+        return response.Response({"error": "POST requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def update(self, request, *args, **kwargs):
+        return response.Response({"error": "PUT requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def destroy(self, request, *args, **kwargs):
+        return response.Response({"error": "DELETE requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+class DataViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.AllowAny]
+
+    queryset = Data.objects.all()
+    serializer_class = DataSerializer
+
+    def create(self, request, *args, **kwargs):
+        return response.Response({"error": "POST requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def update(self, request, *args, **kwargs):
+        return response.Response({"error": "PUT requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def destroy(self, request, *args, **kwargs):
+        return response.Response({"error": "DELETE requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+class ArrecadacaoViewSet(viewsets.ModelViewSet):
+
+    queryset = Arrecadacao.objects.all()
+    serializer_class = ArrecadacaoSerializer
 
 class DivisaoSecao(generics.ListAPIView):
     def get_queryset(self):

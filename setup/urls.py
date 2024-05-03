@@ -14,6 +14,10 @@ router.register(r'divisoes', views.DivisaoViewSet)
 router.register(r'grupos', views.GrupoViewSet)
 router.register(r'classes', views.ClasseViewSet)
 router.register(r'subclasses', views.SubclasseViewSet)
+router.register(r'divisoes-setores', views.DivisaoSetorViewSet)
+router.register(r'setores-economicos', views.SetorEconomicoViewSet)
+router.register(r'datas', views.DataViewSet)
+router.register(r'arrecadacoes', views.ArrecadacaoViewSet)
 
 ## Aqui criamos as rotas da nossa API.
 urlpatterns = [

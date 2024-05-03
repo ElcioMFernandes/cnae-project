@@ -1,6 +1,11 @@
-import requests, json
+import requests, pandas as pd
 
 class Request:
+
+    ## Referente ao conteúdo do arquivo excel
+    dataframe = None # Datafram com os dados do arquivo excel
+
+    ## Referente as rotas da API e do IBGE
     ibge_secao = 'https://servicodados.ibge.gov.br/api/v2/cnae/secoes' #Retornar todas as seções
     ibge_secao_por_identificador = 'https://servicodados.ibge.gov.br/api/v2/cnae/secoes/{secao}' #Retorna uma seção pelo seu identificador
     
@@ -20,19 +25,32 @@ class Request:
     ibge_subclasse_por_identificador = 'https://servicodados.ibge.gov.br/api/v2/cnae/subclasses/{subclasse}' #Retorna uma subclasse pelo seu identificador
     ibge_subclasse_por_classe = 'https://servicodados.ibge.gov.br/api/v2/cnae/classes/{classe}/subclasses' #Retorna todas as subclasses de uma classe
 
+    ## Referente as rotas da API
     api_secao = 'http://127.0.0.1:{port}/secoes/' #Inserir uma seção
     api_divisao = 'http://127.0.0.1:{port}/divisoes/' #Inserir uma divisão
     api_grupo = 'http://127.0.0.1:{port}/grupos/' #Inserir um grupo
     api_classe = 'http://127.0.0.1:{port}/classes/' #Inserir uma classe
     api_subclasse = 'http://127.0.0.1:{port}/subclasses/' #Inserir uma subclasse
+    api_arrecadacao = 'http://127.0.0.1:{port}/arrecadacoes/' #Inserir uma arrecadação
 
-    def __init__(self, port=8000):
+    ## Exemplo de dados para inserção
+    #     {
+    #     "vl_arrecadacao": null, -> Valor da arrecadação tipo float
+    #     "id_divisao_setor": null, -> Identificador da divisão do setor tipo int
+    #     "id_setor_economico": null, -> Identificador do setor econômico tipo int
+    #     "id_data": null, -> Identificador da data tipo int
+    #     "id_subclasse": null -> Identificador da subclasse tipo int
+    # }
+
+    def __init__(self, spreadsheet, port=8000):
         """Por padrão o construtor recebe a porta 8000, caso deseje alterar a porta informe-a como parâmetro"""
         self.api_secao = self.api_secao.format(port=port)
         self.api_divisao = self.api_divisao.format(port=port)
         self.api_grupo = self.api_grupo.format(port=port)
         self.api_classe = self.api_classe.format(port=port)
         self.api_subclasse = self.api_subclasse.format(port=port)
+        self.api_arrecadacao = self.api_arrecadacao.format(port=port)
+        self.dataframe = pd.read_excel(spreadsheet)
     
     def get_ibge_secao(self):
         """Retorna todas as seções do IBGE"""
@@ -148,9 +166,9 @@ class Request:
         response = requests.post(self.api_classe, formatted_data)
         return f"{response.status_code} - {response.text}"            
     
-    def get_api_subclasse(self):
+    def get_api_subclasse(self, codigo_subclasse=''):
         """Retorna todas as subclasses da API"""
-        return requests.get(self.api_subclasse).json()
+        return requests.get(f"{self.api_subclasse}{codigo_subclasse}").json()
 
     def post_api_subclasse(self, codigo_subclasse, descricao_subclasse, id_classe):
         """Insere uma subclasse na API\nParâmetros:\n- codigo_subclasse: Código da subclasse\n- descricao_subclasse: Descrição da subclasse\n- id_classe: Identificador da classe"""
@@ -163,8 +181,8 @@ class Request:
         response = requests.post(self.api_subclasse, formatted_data)
         return f"{response.status_code} - {response.text}\nCódigo: {codigo_subclasse} - Descrição: {descricao_subclasse} - Classe: {id_classe}"
 
-    def main(self):
-        """Método principal para inserir os dados no banco de dados da API"""
+    def add_data(self):
+        """Método para inserir os dados no banco de dados da API"""
         ## Inserir seções no banco de dados
         for secao in self.get_ibge_secao():
             print(self.post_api_secao(secao['id'], secao['descricao'].capitalize()))
@@ -191,5 +209,58 @@ class Request:
 
         print('Finalizado')
 
+    def main(self):
+        mes = {
+            'JANEIRO': 1,
+           'FEVEREIRO': 2,
+            'MARÇO': 3,
+            'ABRIL': 4,
+            'MAIO': 5,
+            'JUNHO': 6,
+            'JULHO': 7,
+            'AGOSTO': 8,
+            'SETEMBRO': 9,
+            'OUTUBRO': 10,
+            'NOVEMBRO': 11,
+            'DEZEMBRO': 12
+               }
+
+        divisao_setor = {
+            'PRIMÁRIO': 1,
+            'SECUNDÁRIO': 2,
+            'TERCIÁRIO': 3
+        }
+
+        setor_economico = {
+            'COMÉRCIO': 1,
+            'SERVIÇO': 2,
+            'MEIO AMBIENTE - SERVIÇO': 3,
+            'INDUSTRIA': 4,
+            'AGROPECUÁRIA E PESCA': 5
+        }
+
+        for index, row in self.dataframe.iterrows():
+
+            cd_subclasse = str(row['CD_SUBCLASSE'])
+            if len(cd_subclasse) == 6:
+                cd_subclasse = f"0{cd_subclasse}"
+                
+            response = requests.get(f"{self.api_subclasse}{cd_subclasse}")
+            cd_subclasse = response.json()['id_subclasse']
+
+            data = {
+                "vl_arrecadacao": float(row['VL_PGTO']),
+                "id_divisao_setor": divisao_setor[row['DE_DIVISAO_SETOR']],
+                "id_setor_economico": setor_economico[row['DE_SETOR_ECONOMICO']],
+                "id_data": mes[row['DE_MES_COMP']],
+                "id_subclasse": cd_subclasse
+            }    
+            try: 
+                response = requests.post(self.api_arrecadacao, data)
+                print(f"{response.status_code} - {response.text}")
+                
+            except Exception as e:
+                print(e)
+
 if __name__ == '__main__':
-    Request().main()
+    Request('spreadsheets/setor_economico_ajustado2.xlsx').main()

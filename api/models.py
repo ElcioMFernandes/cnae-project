@@ -81,3 +81,67 @@ class Subclasse(models.Model):
 
     def __str__(self):
         return str(self.id_subclasse)
+    
+class DivisaoSetor(models.Model):
+    choices_divisao_setor = [
+        (1, 'Primário'),
+        (2, 'Secundário'),
+        (3, 'Terciário'),
+    ]
+
+    id_divisao_setor = models.AutoField(primary_key=True, unique=True, auto_created=True) # Identificador único da divisão do setor
+    de_divisao_setor = models.IntegerField(choices=choices_divisao_setor, null=False, blank=False) # Descrição da divisão do setor
+
+    def __str__(self):
+        return str(self.id_divisao_setor)
+    
+
+class SetorEconomico(models.Model):
+    choices_setor_economico = [
+        (1, 'Comércio'),
+        (2, 'Serviço'),
+        (3, 'Meio Ambiente - Serviço'),
+        (4, 'Indústria'),
+        (5, 'Agropecuária e Pesca'),
+    ]
+
+    id_setor_economico = models.AutoField(primary_key=True, unique=True, auto_created=True) # Identificador único do setor econômico
+    de_setor_economico = models.IntegerField(choices=choices_setor_economico, null=False, blank=False) # Descrição do setor econômico
+
+    def __str__(self):
+        return str(self.id_setor_economico)
+    
+    
+class Data(models.Model):
+    choices_dt_mes = [
+        (1, 'Janeiro'),
+        (2, 'Fevereiro'),
+        (3, 'Março'),
+        (4, 'Abril'),
+        (5, 'Maio'),
+        (6, 'Junho'),
+        (7, 'Julho'),
+        (8, 'Agosto'),
+        (9, 'Setembro'),
+        (10, 'Outubro'),
+        (11, 'Novembro'),
+        (12, 'Dezembro'),
+    ]
+
+    id_data = models.AutoField(primary_key=True, unique=True, auto_created=True) # Identificador único da data
+    dt_ano = models.IntegerField(null=False, blank=False, default=2020) # Ano da data
+    dt_mes = models.IntegerField(null=False, blank=False, choices=choices_dt_mes, default=1) # Mês da data
+
+    def __str__(self):
+        return str(self.id_data)
+    
+class Arrecadacao(models.Model):
+    id_arrecadacao = models.AutoField(primary_key=True, unique=True, auto_created=True) # Identificador único da arrecadação
+    vl_arrecadacao = models.DecimalField(max_digits=15, decimal_places=2, null=False, blank=False) # Valor da arrecadação
+    id_divisao_setor = models.ForeignKey(DivisaoSetor, on_delete=models.PROTECT) # Chave estrangeira para a divisão do setor
+    id_setor_economico = models.ForeignKey(SetorEconomico, on_delete=models.PROTECT) # Chave estrangeira para o setor econômico
+    id_data = models.ForeignKey(Data, on_delete=models.PROTECT) # Chave estrangeira para a data
+    id_subclasse = models.ForeignKey(Subclasse, on_delete=models.PROTECT) # Chave estrangeira para a subclasse
+
+    def __str__(self):
+        return str(self.id_arrecadacao)

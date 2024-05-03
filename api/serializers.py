@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 ################################################################################
 
-from .models import Secao, Divisao, Grupo, Classe, Subclasse
+from .models import Secao, Divisao, Grupo, Classe, Subclasse, DivisaoSetor, SetorEconomico, Data, Arrecadacao
 
 class SecaoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -44,7 +44,34 @@ class ClasseSerializer(serializers.ModelSerializer):
 class SubclasseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subclasse
-        exclude = ['id_subclasse', 'id_classe']
+        exclude = ['id_classe']
+
+class DivisaoSetorSerializer(serializers.ModelSerializer):
+    de_divisao_setor = serializers.CharField(source='get_de_divisao_setor_display', read_only=True)
+
+    class Meta:
+        model = DivisaoSetor
+        fields = '__all__'
+
+class SetorEconomicoSerializer(serializers.ModelSerializer):
+    de_setor_economico = serializers.CharField(source='get_de_setor_economico_display', read_only=True)
+
+    class Meta:
+        model = SetorEconomico
+        fields = '__all__'
+
+class DataSerializer(serializers.ModelSerializer):
+    dt_mes = serializers.CharField(source='get_dt_mes_display', read_only=True)
+
+    class Meta:
+        model = Data
+        fields = '__all__'
+
+class ArrecadacaoSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Arrecadacao
+        fields = '__all__'
 
 class DivisaoSecaoSerializer(serializers.ModelSerializer):
     cd_secao = serializers.CharField(source='id_secao.cd_secao')
@@ -97,3 +124,4 @@ class SubclasseClasseSerializer(serializers.ModelSerializer):
         classe = Classe.objects.get(cd_classe=cd_classe)
         subclasse = Subclasse.objects.create(id_classe=classe, **validated_data)
         return subclasse
+    
