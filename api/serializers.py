@@ -27,24 +27,48 @@ class SecaoSerializer(serializers.ModelSerializer):
         exclude = ['id_secao']
 
 class DivisaoSerializer(serializers.ModelSerializer):
+    cd_secao = serializers.CharField(source='id_secao.cd_secao')
+    de_secao = serializers.CharField(source='id_secao.de_secao')
+    
     class Meta:
         model = Divisao
-        exclude = ['id_divisao', 'id_secao']
+        fields = ['cd_divisao', 'de_divisao', 'cd_secao', 'de_secao']
 
 class GrupoSerializer(serializers.ModelSerializer):
+    cd_divisao = serializers.CharField(source='id_divisao.cd_divisao')
+    de_divisao = serializers.CharField(source='id_divisao.de_divisao')
+    cd_secao = serializers.CharField(source='id_divisao.id_secao.cd_secao')
+    de_secao = serializers.CharField(source='id_divisao.id_secao.de_secao')
+
     class Meta:
         model = Grupo
-        exclude = ['id_grupo', 'id_divisao']
+        fields = ['cd_grupo', 'de_grupo', 'cd_divisao', 'de_divisao', 'cd_secao', 'de_secao']
 
 class ClasseSerializer(serializers.ModelSerializer):
+    cd_grupo = serializers.CharField(source='id_grupo.cd_grupo')
+    de_grupo = serializers.CharField(source='id_grupo.de_grupo')
+    cd_divisao = serializers.CharField(source='id_grupo.id_divisao.cd_divisao')
+    de_divisao = serializers.CharField(source='id_grupo.id_divisao.de_divisao')
+    cd_secao = serializers.CharField(source='id_grupo.id_divisao.id_secao.cd_secao')
+    de_secao = serializers.CharField(source='id_grupo.id_divisao.id_secao.de_secao')
+
     class Meta:
         model = Classe
-        exclude = ['id_classe', 'id_grupo']
+        fields = ['cd_classe', 'de_classe', 'cd_grupo', 'de_grupo', 'cd_divisao', 'de_divisao', 'cd_secao', 'de_secao']    
 
 class SubclasseSerializer(serializers.ModelSerializer):
+    cd_classe = serializers.CharField(source='id_classe.cd_classe')
+    de_classe = serializers.CharField(source='id_classe.de_classe')
+    cd_grupo = serializers.CharField(source='id_classe.id_grupo.cd_grupo')
+    de_grupo = serializers.CharField(source='id_classe.id_grupo.de_grupo')
+    cd_divisao = serializers.CharField(source='id_classe.id_grupo.id_divisao.cd_divisao')
+    de_divisao = serializers.CharField(source='id_classe.id_grupo.id_divisao.de_divisao')
+    cd_secao = serializers.CharField(source='id_classe.id_grupo.id_divisao.id_secao.cd_secao')
+    de_secao = serializers.CharField(source='id_classe.id_grupo.id_divisao.id_secao.de_secao')
+
     class Meta:
         model = Subclasse
-        exclude = ['id_classe']
+        fields = ['cd_subclasse', 'de_subclasse', 'cd_classe', 'de_classe', 'cd_grupo', 'de_grupo', 'cd_divisao', 'de_divisao', 'cd_secao', 'de_secao']
 
 class DivisaoSetorSerializer(serializers.ModelSerializer):
     de_divisao_setor = serializers.CharField(source='get_de_divisao_setor_display', read_only=True)
@@ -68,10 +92,36 @@ class DataSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ArrecadacaoSerializer(serializers.ModelSerializer):
-    
+    dt_mes = serializers.SerializerMethodField()
+    de_subclasse = serializers.CharField(source='id_subclasse.de_subclasse')
+    cd_subclasse = serializers.CharField(source='id_subclasse.cd_subclasse')
+    de_setor_economico = serializers.SerializerMethodField()
+    de_divisao_setor = serializers.SerializerMethodField()
+    vl_arrecadacao = serializers.FloatField()
+
     class Meta:
         model = Arrecadacao
-        fields = '__all__'
+        fields = ['id_arrecadacao', 'vl_arrecadacao', 'cd_subclasse', 'de_subclasse', 'de_setor_economico', 'de_divisao_setor', 'dt_mes']
+        # "id_arrecadacao": 1,
+        # "vl_arrecadacao": 97945120.02,
+        # "id_subclasse": 2
+        # "cd_subclasse": "1113502",
+        # "de_subclasse": "Fabricação de cervejas e chopes",
+        # "id_setor_economico": 4,
+        # "de_setor_economico": "Indústria",
+        # "id_divisao_setor": 2,
+        # "de_divisao_setor": "Secundário",
+        # "id_data": 3,
+        # "dt_mes": "Março",
+        
+    def get_dt_mes(self, obj):
+        return obj.id_data.get_dt_mes_display()
+    
+    def get_de_setor_economico(self, obj):
+        return obj.id_setor_economico.get_de_setor_economico_display()
+    
+    def get_de_divisao_setor(self, obj):
+        return obj.id_divisao_setor.get_de_divisao_setor_display()
 
 class DivisaoSecaoSerializer(serializers.ModelSerializer):
     cd_secao = serializers.CharField(source='id_secao.cd_secao')
@@ -124,4 +174,3 @@ class SubclasseClasseSerializer(serializers.ModelSerializer):
         classe = Classe.objects.get(cd_classe=cd_classe)
         subclasse = Subclasse.objects.create(id_classe=classe, **validated_data)
         return subclasse
-    
