@@ -147,9 +147,54 @@ class DataViewSet(viewsets.ModelViewSet):
         return response.Response({"error": "DELETE requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 class ArrecadacaoViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.AllowAny]
 
     queryset = Arrecadacao.objects.all()
     serializer_class = ArrecadacaoSerializer
+
+    def get_queryset(self):
+        queryset = Arrecadacao.objects.all()
+        mes = self.request.query_params.get('mes', None)
+        setor_economico = self.request.query_params.get('setor_economico', None)
+        divisao_setor = self.request.query_params.get('divisao_setor', None)
+        valor_max = self.request.query_params.get('max', None)
+        valor_min = self.request.query_params.get('min', None)
+        secao = self.request.query_params.get('secao', None)
+        divisao = self.request.query_params.get('divisao', None)
+        grupo = self.request.query_params.get('grupo', None)
+        classe = self.request.query_params.get('classe', None)
+        subclasse = self.request.query_params.get('subclasse', None)
+
+        if subclasse is not None:
+            queryset = queryset.filter(id_subclasse__cd_subclasse=subclasse)
+        if mes is not None:
+            queryset = queryset.filter(id_data__dt_mes=mes)
+        if setor_economico is not None:
+            queryset = queryset.filter(id_setor_economico__de_setor_economico=setor_economico)
+        if divisao_setor is not None:
+            queryset = queryset.filter(id_divisao_setor__de_divisao_setor=divisao_setor)
+        if valor_max is not None:
+            queryset = queryset.filter(vl_arrecadacao__lte=valor_max)
+        if valor_min is not None:
+            queryset = queryset.filter(vl_arrecadacao__gte=valor_min)
+        if secao is not None:
+            queryset = queryset.filter(id_subclasse__id_classe__id_grupo__id_divisao__id_secao__cd_secao=secao)
+        if divisao is not None:
+            queryset = queryset.filter(id_subclasse__id_classe__id_grupo__id_divisao__cd_divisao=divisao)
+        if grupo is not None:
+            queryset = queryset.filter(id_subclasse__id_classe__id_grupo__cd_grupo=grupo)
+        if classe is not None:
+            queryset = queryset.filter(id_subclasse__id_classe__cd_classe=classe)
+        return queryset
+
+    def create(self, request, *args, **kwargs):
+        return response.Response({"error": "POST requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def update(self, request, *args, **kwargs):
+        return response.Response({"error": "PUT requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def destroy(self, request, *args, **kwargs):
+        return response.Response({"error": "DELETE requests not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 class DivisaoSecao(generics.ListAPIView):
     def get_queryset(self):

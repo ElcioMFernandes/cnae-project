@@ -92,27 +92,40 @@ class DataSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ArrecadacaoSerializer(serializers.ModelSerializer):
-    dt_mes = serializers.SerializerMethodField()
-    de_subclasse = serializers.CharField(source='id_subclasse.de_subclasse')
+    vl_arrecadacao = serializers.FloatField()
     cd_subclasse = serializers.CharField(source='id_subclasse.cd_subclasse')
+    de_subclasse = serializers.CharField(source='id_subclasse.de_subclasse')
+    cd_classe = serializers.CharField(source='id_subclasse.id_classe.cd_classe')
+    de_classe = serializers.CharField(source='id_subclasse.id_classe.de_classe')
+    cd_grupo = serializers.CharField(source='id_subclasse.id_classe.id_grupo.cd_grupo')
+    de_grupo = serializers.CharField(source='id_subclasse.id_classe.id_grupo.de_grupo')
+    cd_divisao = serializers.CharField(source='id_subclasse.id_classe.id_grupo.id_divisao.cd_divisao')
+    de_divisao = serializers.CharField(source='id_subclasse.id_classe.id_grupo.id_divisao.de_divisao')
+    cd_secao = serializers.CharField(source='id_subclasse.id_classe.id_grupo.id_divisao.id_secao.cd_secao')
+    de_secao = serializers.CharField(source='id_subclasse.id_classe.id_grupo.id_divisao.id_secao.de_secao')
     de_setor_economico = serializers.SerializerMethodField()
     de_divisao_setor = serializers.SerializerMethodField()
-    vl_arrecadacao = serializers.FloatField()
-
+    dt_mes = serializers.SerializerMethodField()
+    
     class Meta:
         model = Arrecadacao
-        fields = ['id_arrecadacao', 'vl_arrecadacao', 'cd_subclasse', 'de_subclasse', 'de_setor_economico', 'de_divisao_setor', 'dt_mes']
-        # "id_arrecadacao": 1,
-        # "vl_arrecadacao": 97945120.02,
-        # "id_subclasse": 2
-        # "cd_subclasse": "1113502",
-        # "de_subclasse": "Fabricação de cervejas e chopes",
-        # "id_setor_economico": 4,
-        # "de_setor_economico": "Indústria",
-        # "id_divisao_setor": 2,
-        # "de_divisao_setor": "Secundário",
-        # "id_data": 3,
-        # "dt_mes": "Março",
+        fields = [
+            'id_arrecadacao',
+            'vl_arrecadacao',
+            'cd_secao',
+            'de_secao',
+            'cd_divisao',
+            'de_divisao',
+            'cd_grupo',
+            'de_grupo',
+            'cd_classe',
+            'de_classe',
+            'cd_subclasse',
+            'de_subclasse',
+            'dt_mes',
+            'de_setor_economico',
+            'de_divisao_setor'
+            ]
         
     def get_dt_mes(self, obj):
         return obj.id_data.get_dt_mes_display()
