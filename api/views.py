@@ -1,18 +1,4 @@
-## As views são responsáveis por receber as requisições HTTP e retornar as respostas HTTP.
 from rest_framework import viewsets, generics, response, permissions, status
-
-## Precisamos importar o modelo e o serializer que queremos usar na view
-from .models import User
-from .serializers import UserSerializer
-
-## O nome da classe geralmente é o nome do modelo seguido de "ViewSet"
-class UserViewSet(viewsets.ModelViewSet):
-    ## queryset é a lista de objetos que será retornada na resposta
-    queryset = User.objects.all() 
-    ## serializer_class é o serializer que será usado para serializar os dados
-    serializer_class = UserSerializer
-
-################################################################################
 
 from .models import Secao, Divisao, Grupo, Classe, Subclasse, DivisaoSetor, SetorEconomico, Data, Arrecadacao
 from .serializers import SecaoSerializer, DivisaoSerializer, GrupoSerializer, ClasseSerializer, SubclasseSerializer, DivisaoSecaoSerializer, GrupoDivisaoSerializer, ClasseGrupoSerializer, SubclasseClasseSerializer, DivisaoSetorSerializer, SetorEconomicoSerializer, DataSerializer, ArrecadacaoSerializer

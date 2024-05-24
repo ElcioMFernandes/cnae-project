@@ -1,14 +1,10 @@
-## URLs são rotas que o Django utiliza para redirecionar o usuário para as páginas corretas.
 from django.contrib import admin
 from django.urls import path, include
-## No caso da nossa api precisamos importar o router e a view que criamos.
 from rest_framework import routers
 import api.views as views
 
 ## Aqui criamos um objeto router que vai ser responsável por criar as rotas da nossa API.
 router = routers.DefaultRouter()
-## Aqui registramos a rota para o nosso UserViewSet.
-router.register(r'users', views.UserViewSet)
 router.register(r'secoes', views.SecaoViewSet)
 router.register(r'divisoes', views.DivisaoViewSet)
 router.register(r'grupos', views.GrupoViewSet)

@@ -1,14 +1,4 @@
-## No admin do Django, podemos ver as tabelas do banco de dados e manipulá-las.
 from django.contrib import admin
-## Aqui importamos o modelo User que criamos.
-from .models import User
-
-## Aqui registramos o modelo User para que ele apareça no admin.
-class UserAdmin(admin.ModelAdmin):
-    ## Listamos os campos que queremos que apareçam na tabela do admin.
-    list_display = ('id_user', 'name', 'email', 'created_at', 'updated_at')
-
-################################################################################
 
 from .models import Secao, Divisao, Grupo, Classe, Subclasse, DivisaoSetor, SetorEconomico, Data, Arrecadacao
 
@@ -39,8 +29,6 @@ class DataAdmin(admin.ModelAdmin):
 class ArrecadacaoAdmin(admin.ModelAdmin):
     list_display = ('id_arrecadacao', 'id_data', 'id_subclasse', 'id_setor_economico', 'vl_arrecadacao', 'id_divisao_setor')
     
-## Aqui registramos o modelo User e a classe UserAdmin.
-admin.site.register(User, UserAdmin)
 admin.site.register(Secao, SecaoAdmin)
 admin.site.register(Divisao, DivisaoAdmin)
 admin.site.register(Grupo, GrupoAdmin)

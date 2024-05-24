@@ -1,24 +1,4 @@
-## Serializer são responsáveis por converter os dados em um formato que pode ser facilmente consumido por um front-end, como JSON ou XML.
-
 from rest_framework import serializers
-
-## Precisamos importar o modelo que queremos serializar
-## Geralmente, o modelo é importado do arquivo models.py
-
-from .models import User
-
-## Geralmente o nome do serializer é o nome do modelo seguido de "Serializer"
-class UserSerializer(serializers.ModelSerializer):
-    ## A classe Meta é usada para definir metadados do serializer
-    class Meta:
-        ## model é o modelo que será serializado
-        model = User
-        ## fields é uma lista com os campos que serão serializados
-        fields = '__all__'
-        ## '__all__' indica que todos os campos do modelo serão serializados
-
-################################################################################
-
 from .models import Secao, Divisao, Grupo, Classe, Subclasse, DivisaoSetor, SetorEconomico, Data, Arrecadacao
 
 class SecaoSerializer(serializers.ModelSerializer):
