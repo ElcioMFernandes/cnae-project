@@ -197,7 +197,7 @@ class GrupoDivisao(generics.ListAPIView):
 class ClasseGrupo(generics.ListAPIView):
     def get_queryset(self):
         queryset = Classe.objects.filter(id_grupo__cd_grupo=self.kwargs['cd_grupo'])
-        return 
+        return queryset
     serializer_class = ClasseGrupoSerializer
 
 class SubclasseClasse(generics.ListAPIView):
