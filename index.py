@@ -5,11 +5,11 @@ import pandas as pd
 def get(url):
     return req.get(url).json()
 
+input_dict = {}
+
 with st.sidebar:
     response = get('http://127.0.0.1:8000/secoes/')
     options = [item['cd_secao'] for item in response]
-
-    input_dict = {}
 
     secao = st.selectbox('Seção', options=options, key='secao', index=None, placeholder="Selecione uma seção")
     input_dict['secao'] = secao
@@ -54,8 +54,8 @@ with st.sidebar:
                                     subclasses = get(f'http://127.0.0.1:8000/classes/{st.session_state.classe}/subclasses/')
                                     subclass_options = [item['cd_subclasse'] for item in subclasses]
                                     subclass = st.selectbox('Subclasse', options=subclass_options, key='subclass', index=None, placeholder="Selecione uma subclasse")
-                                    input_dict['subclass'] = subclass
-                                    
+                                    input_dict['subclasse'] = subclass
+
     if st.button('Imprimir valores'):
         query = ''
         for key, value in input_dict.items():
@@ -65,6 +65,23 @@ with st.sidebar:
             try:
                 response = req.get(f'http://127.0.0.1:8000/arrecadacoes/?{query[:-1]}').json()
                 df = pd.DataFrame(response)
-                st.write(df)
+                st.session_state['df'] = df
             except:
+                st.session_state['df'] = None
                 st.write('Erro ao buscar dados')
+
+if 'df' in st.session_state and st.session_state['df'] is not None:                
+    with st.chat_message('user'):
+        message = ''
+        if st.session_state['df']['cd_subclasse'].nunique() == 1:
+            message += f"\nSubclasse: {st.session_state['df']['cd_subclasse'].unique().item()}\n"
+        else:
+            message += f"\nSubclasses atendidas: {st.session_state['df']['cd_subclasse'].nunique()}\n"
+            
+        message += f"\nMédia de arrecadação: R$ {st.session_state['df']['vl_arrecadacao'].mean():,.2f}\n"
+        message += f"\nMaior de arrecadação: R$ {st.session_state['df']['vl_arrecadacao'].max():,.2f}\n"
+        message += f"\nMenor de arrecadação: R$ {st.session_state['df']['vl_arrecadacao'].min():,.2f}\n"
+        message += f"\nTotal de arrecadação: R$ {st.session_state['df']['vl_arrecadacao'].sum():,.2f}\n"
+        st.write(message)
+        with st.expander('Visualizar planilha'):
+            st.write(st.session_state['df'])

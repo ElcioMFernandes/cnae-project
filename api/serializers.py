@@ -102,6 +102,7 @@ class ArrecadacaoSerializer(serializers.ModelSerializer):
             'de_classe',
             'cd_subclasse',
             'de_subclasse',
+            'id_data',
             'dt_mes',
             'de_setor_economico',
             'de_divisao_setor'
